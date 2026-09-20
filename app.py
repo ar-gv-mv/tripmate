@@ -112,3 +112,78 @@ def create_trip():
         user_id
     )
     return redirect("/")
+
+@app.route("/trip/<int:trip_id>")
+def show_trip(trip_id):
+    trip = trips.get_trip(trip_id)
+    return render_template("trip.html", trip=trip)
+
+@app.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
+def edit_trip(trip_id):
+    trip = trips.get_trip(trip_id)
+
+    if "user_id" not in session:
+        return redirect("/")
+
+    if trip["user_id"] != session["user_id"]:
+        return "ERROR: access denied"
+
+    if request.method == "GET":
+        return render_template("edit_trip.html", trip=trip)
+
+    if request.method == "POST":
+        start_location = request.form["start_location"]
+        destination = request.form["destination"]
+        travel_date = request.form["travel_date"]
+        seat_count = request.form["seat_count"]
+        description = request.form["description"]
+
+        if not start_location or len(start_location) > 100:
+            return "ERROR: invalid starting location"
+
+        if not destination or len(destination) > 100:
+            return "ERROR: invalid destination"
+
+        if not travel_date:
+            return "ERROR: invalid date"
+
+        if not seat_count.isdigit():
+            return "ERROR: invalid number of seats"
+
+        seat_count = int(seat_count)
+
+        if seat_count < 1 or seat_count > 100:
+            return "ERROR: invalid number of seats"
+
+        if len(description) > 1000:
+            return "ERROR: description is too long"
+
+        trips.update_trip(
+            trip["id"],
+            start_location,
+            destination,
+            travel_date,
+            seat_count,
+            description
+        )
+
+        return redirect("/trip/" + str(trip["id"]))
+
+@app.route("/remove_trip/<int:trip_id>", methods=["GET", "POST"])
+def remove_trip(trip_id):
+    trip = trips.get_trip(trip_id)
+
+    if "user_id" not in session:
+        return redirect("/")
+
+    if trip["user_id"] != session["user_id"]:
+        return "ERROR: access denied"
+
+    if request.method == "GET":
+        return render_template("remove_trip.html", trip=trip)
+
+    if request.method == "POST":
+        if "continue" in request.form:
+            trips.remove_trip(trip["id"])
+
+        return redirect("/")

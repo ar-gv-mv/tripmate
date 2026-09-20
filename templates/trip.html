@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Trip</title>
+</head>
+
+<body>
+  <h1>From {{trip.start_location}} to {{trip.destination}}</h1>
+
+  <p>
+    Date: {{trip.travel_date}}
+  </p>
+  <p>
+    Number of seats: {{trip.seat_count}}
+  </p>
+  <p>
+    Description:
+    <br/>
+    {{trip.description}}
+  </p>
+  <p>
+    Created by: {{trip.username}}
+  </p>
+  {%if trip.user_id == session.user_id%}
+  <p>
+    <a href="/edit_trip/{{ trip.id }}">Edit</a>
+  </p>
+  <p>
+    <a href="/remove_trip/{{ trip.id }}">Delete</a>
+  </p>
+  {%endif%}
+
+  <p>
+    <a href="/">Back</a>
+  </p>
+</body>
+</html>

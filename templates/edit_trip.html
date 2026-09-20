@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit trip</title>
+</head>
+
+<body>
+  <h1>Edit trip</h1>
+
+  <form action="/edit_trip/{{trip.id}}" method="post">
+    <p>
+      Starting location: <br/>
+      <input type="text" name="start_location"
+             value="{{trip.start_location}}"/>
+    </p>
+    <p>
+      Destination: <br/>
+      <input type="text" name="destination"
+             value="{{trip.destination}}"/>
+    </p>
+    <p>
+      Date: <br/>
+      <input type="date" name="travel_date"
+             value="{{trip.travel_date}}"/>
+    </p>
+    <p>
+      Number of seats: <br/>
+      <input type="number" name="seat_count"
+             value="{{trip.seat_count}}"/>
+    </p>
+    <p>
+      Description: <br/>
+      <textarea name="description" rows="5" cols="40">{{trip.description}}</textarea>
+    </p>
+    <input type="submit" value="Save changes"/>
+  </form>
+
+  <p>
+    <a href="/trip/{{trip.id}}">Back</a>
+  </p>
+</body>
+</html>
