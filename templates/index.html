@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TripMate</title>
+</head>
+
+<body>
+  <h1>TripMate</h1>
+
+  {%if session.user_id%}
+  <p>
+    You are logged in as {{session.username}}
+  </p>
+  <p>
+    <a href="/logout">Log out</a>
+  </p>
+  {%else%}
+  <form action="/login" method="post">
+    <p>
+      Username: <br/>
+      <input type="text" name="username"/>
+    </p>
+    <p>
+      Password: <br/>
+      <input type="password" name="password"/>
+    </p>
+    <input type="submit" value="Log in"/>
+  </form>
+  <p>
+    <a href="/register">Create account</a>
+  </p>
+  {%endif%}
+</body>
+</html>
