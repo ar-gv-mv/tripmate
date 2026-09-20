@@ -1,4 +1,4 @@
-# tripmate
+# TripMate
 
 The application helps users find travel companions for trips, e.g. when someone needs to get from Helsinki to Tampere.
 
@@ -11,3 +11,36 @@ The application helps users find travel companions for trips, e.g. when someone 
 * Trips can be classified, for example, by transportation type and travel style.
 * Users can join trips created by other users.
 * A trip page shows the users who have joined the trip.
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ar-gv-mv/tripmate.git
+cd tripmate
+```
+
+Create a virtual environment:
+
+`python3 -m venv venv`
+
+Activate the virtual environment:
+
+`source venv/bin/activate`
+
+Install Flask:
+
+`pip install flask`
+
+Create the database:
+
+`sqlite3 database.db < schema.sql`
+
+Start the application:
+
+`flask run`
+
+Open the application in your browser:
+
+`http://127.0.0.1:5000`
