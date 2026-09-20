@@ -187,3 +187,20 @@ def remove_trip(trip_id):
             trips.remove_trip(trip["id"])
 
         return redirect("/")
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if request.method == "GET":
+        return render_template("search.html")
+
+    if request.method == "POST":
+        start_location = request.form["start_location"]
+        destination = request.form["destination"]
+        travel_date = request.form["travel_date"]
+
+        results = trips.search_trips(
+            start_location,
+            destination,
+            travel_date
+        )
+        return render_template("search.html", results=results)

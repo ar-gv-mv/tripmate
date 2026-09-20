@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search trips</title>
+</head>
+
+<body>
+  <h1>Search trips</h1>
+
+  <form action="/search" method="post">
+    <p>
+      Starting location: <br/>
+      <input type="text" name="start_location"/>
+    </p>
+    <p>
+      Destination: <br/>
+      <input type="text" name="destination"/>
+    </p>
+    <p>
+      Date: <br/>
+      <input type="date" name="travel_date"/>
+    </p>
+    <input type="submit" value="Search"/>
+  </form>
+
+  {%if results%}
+  <h2>Results</h2>
+
+  {%for trip in results%}
+  <p>
+    <a href="/trip/{{trip.id}}">
+      From {{trip.start_location}} to {{trip.destination}}
+    </a>
+    <br/>
+    Date: {{trip.travel_date}}
+    <br/>
+    Seats: {{trip.seat_count}}
+    <br/>
+    Created by: {{trip.username}}
+  </p>
+  <hr/>
+  {%endfor%}
+  {%endif%}
+
+  <p>
+    <a href="/">Back</a>
+  </p>
+</body>
+</html>
