@@ -24,6 +24,11 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
+    if not username or len(username) >50:
+        return "ERROR: invalid username"
+    if not password1:
+        return "ERROR: password cannot be empty"
+
     if password1 != password2:
         return "ERROR: passwords are not the same"
 
@@ -60,8 +65,9 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["user_id"]
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"]
+        del session["username"]
     return redirect("/")
 
 @app.route("/new_trip")
