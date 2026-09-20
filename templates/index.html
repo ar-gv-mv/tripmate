@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>TripMate</title>
 </head>
@@ -8,9 +7,15 @@
 <body>
   <h1>TripMate</h1>
 
+  <p>
+    <a href="/search">Search trips</a>
+  </p>
   {%if session.user_id%}
   <p>
     You are logged in as {{session.username}}
+  </p>
+  <p>
+    <a href="/new_trip">Create a new trip</a>
   </p>
   <p>
     <a href="/logout">Log out</a>
@@ -31,5 +36,20 @@
     <a href="/register">Create account</a>
   </p>
   {%endif%}
+
+  <h2>Trips</h2>
+
+  {%for trip in trips%}
+  <p>
+    <a href="/trip/{{trip.id}}">From {{trip.start_location}} to {{trip.destination}}</a>
+    <br />
+    Date: {{trip.travel_date}}
+    <br />
+    Seats: {{trip.seat_count}}
+    <br />
+    Created by: {{trip.username}}
+  </p>
+  <hr />
+  {%endfor%}
 </body>
 </html>
