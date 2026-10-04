@@ -122,6 +122,8 @@ def new_trip():
     if "user_id" not in session:
         return redirect("/")
 
+    set_csrf_token()
+
     classifications = trips.get_classifications()
     return render_template("new_trip.html", classifications=classifications)
 
@@ -129,6 +131,8 @@ def new_trip():
 def create_trip():
     if "user_id" not in session:
         return redirect("/")
+
+    check_csrf()
 
     start_location = request.form["start_location"]
     destination = request.form["destination"]
@@ -214,6 +218,7 @@ def edit_trip(trip_id):
         return "ERROR: access denied"
 
     if request.method == "GET":
+        set_csrf_token()
         classifications = trips.get_classifications()
         selected = trips.get_trip_classifications(trip_id)
         selected_ids = [item["id"] for item in selected]
@@ -226,6 +231,7 @@ def edit_trip(trip_id):
         )
 
     if request.method == "POST":
+        check_csrf()
         start_location = request.form["start_location"]
         destination = request.form["destination"]
         travel_date = request.form["travel_date"]
