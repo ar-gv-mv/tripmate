@@ -2,14 +2,13 @@
 <html>
 <head>
   <title>TripMate</title>
-  {%for message in get_flashed_messages()%}
-  <p>{{message}}</p>
-  {%endfor%}
 </head>
 
 <body>
   <h1>TripMate</h1>
-
+  {%for message in get_flashed_messages()%}
+  <p>{{message}}</p>
+  {%endfor%}
   <p>
     <a href="/search">Search trips</a>
   </p>

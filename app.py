@@ -99,7 +99,7 @@ def create():
 @app.route("/login", methods=["POST"])
 def login():
     check_csrf()
-    username = request.form["username"]
+    username = request.form["username"].strip()
     password = request.form["password"]
 
     if not username:
@@ -121,7 +121,7 @@ def login():
         session["username"] = username
         return redirect("/")
     else:
-        return "ERROR: wrong username or password"
+        return "ERROR: incorrect password", 400
 
 @app.route("/logout", methods=["POST"])
 def logout():
