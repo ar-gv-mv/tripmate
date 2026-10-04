@@ -29,3 +29,9 @@ INSERT INTO classifications (category, name) VALUES
     ('preference', 'Pets allowed'),
     ('preference', 'Large luggage allowed'),
     ('preference', 'Music allowed');
+CREATE TABLE participants (
+    id INTEGER PRIMARY KEY,
+    trip_id INTEGER REFERENCES trips ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users,
+    UNIQUE(trip_id, user_id)
+);
