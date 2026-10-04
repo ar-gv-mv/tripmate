@@ -13,3 +13,12 @@ def get_user_trips(user_id):
              WHERE user_id = ?
              ORDER BY id DESC"""
     return db.query(sql, [user_id])
+
+def get_user_by_username(username):
+    sql = "SELECT id, password_hash FROM users WHERE username = ?"
+    result = db.query(sql, [username])
+
+    if result:
+        return result[0]
+
+    return None

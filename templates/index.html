@@ -2,6 +2,9 @@
 <html>
 <head>
   <title>TripMate</title>
+  {%for message in get_flashed_messages()%}
+  <p>{{message}}</p>
+  {%endfor%}
 </head>
 
 <body>

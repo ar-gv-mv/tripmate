@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, abort
+from flask import Flask, abort, flash
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
@@ -93,7 +93,8 @@ def create():
     except sqlite3.IntegrityError:
         return "ERROR: username is already taken"
 
-    return "Account created"
+    flash("Account created successfully. You can now log in.")
+    return redirect("/")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -101,14 +102,19 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT id, password_hash FROM users WHERE username = ?"
-    result = db.query(sql, [username])
+    if not username:
+        return "ERROR: enter your username", 400
 
-    if not result:
-        return "ERROR: wrong username or password"
+    if not password:
+        return "ERROR: enter your password", 400
 
-    user_id = result[0]["id"]
-    password_hash = result[0]["password_hash"]
+    user = users.get_user_by_username(username)
+
+    if not user:
+        return "ERROR: username does not exist", 400
+
+    user_id = user["id"]
+    password_hash = user["password_hash"]
 
     if check_password_hash(password_hash, password):
         session["user_id"] = user_id
@@ -131,7 +137,7 @@ def new_trip():
     set_csrf_token()
 
     classifications = trips.get_classifications()
-    return render_template("new_trip.html", classifications=classifications)
+    return render_template("new_trip.html", classifications=classifications, today=date.today().isoformat())
 
 @app.route("/create_trip", methods=["POST"])
 def create_trip():
@@ -154,8 +160,12 @@ def create_trip():
         return "ERROR: invalid destination"
 
     try:
-        if date.fromisoformat(travel_date).isoformat() != travel_date:
+        trip_date = date.fromisoformat(travel_date)
+        if trip_date.isoformat() != travel_date:
             return "ERROR: invalid date", 400
+
+        if trip_date < date.today():
+            return "ERROR: trip date cannot be in the past", 400
     except ValueError:
         return "ERROR: invalid date", 400
 
@@ -244,7 +254,8 @@ def edit_trip(trip_id):
             "edit_trip.html",
             trip=trip,
             classifications=classifications,
-            selected_ids=selected_ids
+            selected_ids=selected_ids,
+            today=date.today().isoformat()
         )
 
     if request.method == "POST":
@@ -262,8 +273,12 @@ def edit_trip(trip_id):
             return "ERROR: invalid destination"
 
         try:
-            if date.fromisoformat(travel_date).isoformat() != travel_date:
+            trip_date = date.fromisoformat(travel_date)
+            if trip_date.isoformat() != travel_date:
                 return "ERROR: invalid date", 400
+
+            if trip_date < date.today():
+                return "ERROR: trip date cannot be in the past", 400
         except ValueError:
             return "ERROR: invalid date", 400
 
@@ -356,6 +371,7 @@ def show_user(user_id):
 def join_trip(trip_id):
     if "user_id" not in session:
         return redirect("/")
+    check_csrf()
 
     result = trips.add_participant(trip_id, session["user_id"])
 
