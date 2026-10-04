@@ -161,6 +161,7 @@ def show_trip(trip_id):
     selected = trips.get_trip_classifications(trip_id)
     style = "Not specified"
     preferences = []
+    participants = trips.get_participants(trip_id)
 
     for item in selected:
         if item["category"] == "style":
@@ -168,7 +169,22 @@ def show_trip(trip_id):
         if item["category"] == "preference":
             preferences.append(item["name"])
 
-    return render_template("trip.html", trip=trip, style=style, preferences=preferences)
+    seats_left = trip["seat_count"] - len(participants)
+
+    has_joined = False
+
+    if "user_id" in session:
+        for user in participants:
+            if user["id"] == session["user_id"]:
+                has_joined = True
+
+    return render_template(
+        "trip.html", trip=trip,
+        style=style, preferences=preferences,
+        participants=participants,
+        seats_left=seats_left,
+        has_joined=has_joined
+    )
 
 @app.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
 def edit_trip(trip_id):
@@ -282,3 +298,24 @@ def show_user(user_id):
     trip_count = len(user_trips)
 
     return render_template("user.html", user=user, trips=user_trips, trip_count=trip_count)
+
+@app.route("/join_trip/<int:trip_id>", methods=["POST"])
+def join_trip(trip_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    result = trips.add_participant(trip_id, session["user_id"])
+
+    if result == "not_found":
+        return "ERROR: trip not found", 404
+
+    if result == "own_trip":
+        return "ERROR: cannot join your own trip", 403
+
+    if result == "already_joined":
+        return "ERROR: already joined", 409
+
+    if result == "full":
+        return "ERROR: no available seats", 409
+
+    return redirect("/trip/" + str(trip_id))

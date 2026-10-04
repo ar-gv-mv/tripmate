@@ -47,7 +47,19 @@
     <a href="/remove_trip/{{ trip.id }}">Delete</a>
   </p>
   {%endif%}
-
+  {%if session.user_id%}
+    {%if trip.user_id != session.user_id%}
+      {%if has_joined%}
+      <p>You have joined this trip.</p>
+      {%elif seats_left > 0%}
+      <form action="/join_trip/{{trip.id}}" method="post">
+        <input type="submit" value="Join trip"/>
+      </form>
+      {%else%}
+      <p>This trip is full.</p>
+      {%endif%}
+    {%endif%}
+  {%endif%}
   <p>
     <a href="/">Back</a>
   </p>

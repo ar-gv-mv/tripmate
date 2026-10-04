@@ -1,4 +1,5 @@
 import db
+import sqlite3
 
 def get_trips():
     sql = """SELECT t.id, t.start_location, t.destination, t.travel_date,
@@ -84,3 +85,52 @@ def get_trip_classifications(trip_id):
                AND tc.trip_id = ?
              ORDER BY c.category, c.id"""
     return db.query(sql, [trip_id])
+
+def get_participants(trip_id):
+    sql = """SELECT u.id, u.username
+             FROM participants p, users u
+             WHERE p.user_id = u.id AND p.trip_id = ?
+             ORDER BY p.id"""
+    return db.query(sql, [trip_id])
+
+def add_participant(trip_id, user_id):
+    sql = "SELECT id, user_id FROM trips WHERE id = ?"
+    result = db.query(sql, [trip_id])
+
+    if not result:
+        return "not_found"
+
+    trip = result[0]
+
+    if trip["user_id"] == user_id:
+        return "own_trip"
+
+    sql = """SELECT id FROM participants
+             WHERE trip_id = ? AND user_id = ?"""
+    if db.query(sql, [trip_id, user_id]):
+        return "already_joined"
+
+    sql = """INSERT INTO participants (trip_id, user_id)
+             SELECT t.id, ?
+             FROM trips t
+             WHERE t.id = ?
+               AND t.user_id != ?
+               AND (SELECT COUNT(*)
+                    FROM participants p
+                    WHERE p.trip_id = t.id) < t.seat_count
+               AND NOT EXISTS
+                   (SELECT 1 FROM participants p
+                    WHERE p.trip_id = t.id AND p.user_id = ?)"""
+
+    try:
+        db.execute(sql, [user_id, trip_id, user_id, user_id])
+    except sqlite3.IntegrityError:
+        return "already_joined"
+
+    sql = """SELECT id FROM participants
+             WHERE trip_id = ? AND user_id = ?"""
+
+    if db.query(sql, [trip_id, user_id]):
+        return "joined"
+
+    return "full"
