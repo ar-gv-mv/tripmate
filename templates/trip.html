@@ -20,7 +20,7 @@
     {{trip.description}}
   </p>
   <p>
-    Created by: {{trip.username}}
+    Created by: <a href="/user/{{trip.user_id}}">{{trip.username}}</a>
   </p>
   {%if trip.user_id == session.user_id%}
   <p>

@@ -1,10 +1,11 @@
 import sqlite3
-from flask import Flask
+from flask import Flask, abort
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
 import trips
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -210,3 +211,15 @@ def search():
             travel_date
         )
         return render_template("search.html", results=results)
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+
+    if not user:
+        abort(404)
+
+    user_trips = users.get_user_trips(user_id)
+    trip_count = len(user_trips)
+
+    return render_template("user.html", user=user, trips=user_trips, trip_count=trip_count)
