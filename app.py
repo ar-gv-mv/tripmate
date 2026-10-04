@@ -91,7 +91,7 @@ def create():
         sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
-        return "ERROR: username is already taken"
+        return "ERROR: username is already taken", 409
 
     flash("Account created successfully. You can now log in.")
     return redirect("/")
