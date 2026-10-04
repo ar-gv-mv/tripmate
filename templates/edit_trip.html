@@ -32,6 +32,35 @@
       Description: <br/>
       <textarea name="description" rows="5" cols="40">{{trip.description}}</textarea>
     </p>
+    <h2>Travel style</h2>
+
+    {%for option in classifications%}
+      {%if option.category == "style"%}
+      <p>
+        <label>
+          <input type="radio" name="style"
+                 value="{{option.id}}" required
+                 {%if option.id in selected_ids%}checked{%endif%}/>
+          {{option.name}}
+        </label>
+      </p>
+      {%endif%}
+    {%endfor%}
+
+    <h2>Ride preferences</h2>
+
+    {%for option in classifications%}
+      {%if option.category == "preference"%}
+      <p>
+        <label>
+          <input type="checkbox" name="preference"
+                 value="{{option.id}}"
+                 {%if option.id in selected_ids%}checked{%endif%}/>
+          {{option.name}}
+        </label>
+      </p>
+      {%endif%}
+    {%endfor%}
     <input type="submit" value="Save changes"/>
   </form>
 

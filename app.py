@@ -10,6 +10,35 @@ import users
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def get_selected_classifications():
+    styles = request.form.getlist("style")
+    preferences = request.form.getlist("preference")
+
+    if len(styles) != 1:
+        return None
+
+    if len(preferences) != len(set(preferences)):
+        return None
+
+    options = trips.get_classifications()
+
+    allowed_styles = {
+        str(option["id"]) for option in options
+        if option["category"] == "style"
+    }
+    allowed_preferences = {
+        str(option["id"]) for option in options
+        if option["category"] == "preference"
+    }
+
+    if styles[0] not in allowed_styles:
+        return None
+
+    if not set(preferences).issubset(allowed_preferences):
+        return None
+
+    return [int(value) for value in styles + preferences]
+
 @app.route("/")
 def index():
     all_trips = trips.get_trips()
@@ -76,7 +105,8 @@ def new_trip():
     if "user_id" not in session:
         return redirect("/")
 
-    return render_template("new_trip.html")
+    classifications = trips.get_classifications()
+    return render_template("new_trip.html", classifications=classifications)
 
 @app.route("/create_trip", methods=["POST"])
 def create_trip():
@@ -110,20 +140,35 @@ def create_trip():
     if len(description) > 1000:
         return "ERROR: description is too long"
 
+    classification_ids = get_selected_classifications()
+    if classification_ids is None:
+        return "ERROR: invalid trip classifications", 400
+
     trips.add_trip(
         start_location,
         destination,
         travel_date,
         seat_count,
         description,
-        user_id
+        user_id,
+        classification_ids
     )
     return redirect("/")
 
 @app.route("/trip/<int:trip_id>")
 def show_trip(trip_id):
     trip = trips.get_trip(trip_id)
-    return render_template("trip.html", trip=trip)
+    selected = trips.get_trip_classifications(trip_id)
+    style = "Not specified"
+    preferences = []
+
+    for item in selected:
+        if item["category"] == "style":
+            style = item["name"]
+        if item["category"] == "preference":
+            preferences.append(item["name"])
+
+    return render_template("trip.html", trip=trip, style=style, preferences=preferences)
 
 @app.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
 def edit_trip(trip_id):
@@ -136,7 +181,16 @@ def edit_trip(trip_id):
         return "ERROR: access denied"
 
     if request.method == "GET":
-        return render_template("edit_trip.html", trip=trip)
+        classifications = trips.get_classifications()
+        selected = trips.get_trip_classifications(trip_id)
+        selected_ids = [item["id"] for item in selected]
+
+        return render_template(
+            "edit_trip.html",
+            trip=trip,
+            classifications=classifications,
+            selected_ids=selected_ids
+        )
 
     if request.method == "POST":
         start_location = request.form["start_location"]
@@ -165,13 +219,18 @@ def edit_trip(trip_id):
         if len(description) > 1000:
             return "ERROR: description is too long"
 
+        classification_ids = get_selected_classifications()
+        if classification_ids is None:
+            return "ERROR: invalid trip classifications", 400
+
         trips.update_trip(
             trip["id"],
             start_location,
             destination,
             travel_date,
             seat_count,
-            description
+            description,
+            classification_ids
         )
 
         return redirect("/trip/" + str(trip["id"]))

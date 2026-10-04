@@ -19,6 +19,23 @@
     <br/>
     {{trip.description}}
   </p>
+  <h2>Travel style</h2>
+  <p>
+    {{style}}
+  </p>
+  <h2>Ride preferences</h2>
+
+  {%if preferences%}
+  <ul>
+    {%for preference in preferences%}
+    <li>{{preference}}</li>
+    {%endfor%}
+  </ul>
+  {%else%}
+  <p>
+    No preferences specified
+  </p>
+  {%endif%}
   <p>
     Created by: <a href="/user/{{trip.user_id}}">{{trip.username}}</a>
   </p>
