@@ -179,6 +179,10 @@ def create_trip():
 def show_trip(trip_id):
     set_csrf_token()
     trip = trips.get_trip(trip_id)
+
+    if not trip:
+        abort(404)
+
     selected = trips.get_trip_classifications(trip_id)
     style = "Not specified"
     preferences = []
@@ -210,6 +214,9 @@ def show_trip(trip_id):
 @app.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
 def edit_trip(trip_id):
     trip = trips.get_trip(trip_id)
+
+    if not trip:
+        abort(404)
 
     if "user_id" not in session:
         return redirect("/")
@@ -281,6 +288,8 @@ def edit_trip(trip_id):
 @app.route("/remove_trip/<int:trip_id>", methods=["GET", "POST"])
 def remove_trip(trip_id):
     trip = trips.get_trip(trip_id)
+    if not trip:
+        abort(404)
 
     if "user_id" not in session:
         return redirect("/")

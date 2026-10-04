@@ -34,7 +34,8 @@ def get_trip(trip_id):
                     t.seat_count, t.description, t.user_id, u.username
              FROM trips t, users u
              WHERE t.user_id = u.id AND t.id = ?"""
-    return db.query(sql, [trip_id])[0]
+    result = db.query(sql, [trip_id])
+    return result[0] if result else None
 
 def update_trip(trip_id, start_location, destination, travel_date,
                 seat_count, description, classification_ids):
