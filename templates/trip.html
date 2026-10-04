@@ -15,6 +15,9 @@
     Number of seats: {{trip.seat_count}}
   </p>
   <p>
+    Available seats: {{seats_left}}
+  </p>
+  <p>
     Description:
     <br/>
     {{trip.description}}
@@ -45,6 +48,21 @@
   </p>
   <p>
     <a href="/remove_trip/{{ trip.id }}">Delete</a>
+  </p>
+  {%endif%}
+  <h2>Participants</h2>
+
+  {%if participants%}
+  <ul>
+    {%for user in participants%}
+    <li>
+      <a href="/user/{{user.id}}">{{user.username}}</a>
+    </li>
+    {%endfor%}
+  </ul>
+  {%else%}
+  <p>
+    No participants yet.
   </p>
   {%endif%}
   {%if session.user_id%}

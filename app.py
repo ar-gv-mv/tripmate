@@ -232,6 +232,10 @@ def edit_trip(trip_id):
         if seat_count < 1 or seat_count > 100:
             return "ERROR: invalid number of seats"
 
+        participants = trips.get_participants(trip_id)
+        if seat_count < len(participants):
+            return "ERROR: not enough seats for current passengers"
+
         if len(description) > 1000:
             return "ERROR: description is too long"
 
