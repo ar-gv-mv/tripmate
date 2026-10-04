@@ -6,9 +6,22 @@ import config
 import db
 import trips
 import users
+import secrets
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def set_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+
+
+def check_csrf():
+    if request.form.get("csrf_token") != session.get("csrf_token"):
+        abort(403)
+
+    if "csrf_token" not in session:
+        abort(403)
 
 def get_selected_classifications():
     styles = request.form.getlist("style")
@@ -41,15 +54,18 @@ def get_selected_classifications():
 
 @app.route("/")
 def index():
+    set_csrf_token()
     all_trips = trips.get_trips()
     return render_template("index.html", trips=all_trips)
 
 @app.route("/register")
 def register():
+    set_csrf_token()
     return render_template("register.html")
 
 @app.route("/create", methods=["POST"])
 def create():
+    check_csrf()
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -74,6 +90,7 @@ def create():
 
 @app.route("/login", methods=["POST"])
 def login():
+    check_csrf()
     username = request.form["username"]
     password = request.form["password"]
 
