@@ -10,15 +10,15 @@
   <form action="/search" method="post">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
-      Starting location: <br/>
+      <label for="start_location">From:</label><br/>
       <input type="text" name="start_location"/>
     </p>
     <p>
-      Destination: <br/>
+      <label for="destination">To:</label><br/>
       <input type="text" name="destination"/>
     </p>
     <p>
-      Date: <br/>
+      <label for="travel_date">Date:</label><br/>
       <input type="date" name="travel_date"/>
     </p>
     <input type="submit" value="Search"/>

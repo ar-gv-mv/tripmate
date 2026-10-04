@@ -8,6 +8,7 @@ import trips
 import users
 import secrets
 from datetime import date
+import markupsafe
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -16,13 +17,18 @@ def set_csrf_token():
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_hex(16)
 
-
 def check_csrf():
     if request.form.get("csrf_token") != session.get("csrf_token"):
         abort(403)
 
     if "csrf_token" not in session:
         abort(403)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br/>")
+    return markupsafe.Markup(content)
 
 def get_selected_classifications():
     styles = request.form.getlist("style")

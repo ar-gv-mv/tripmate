@@ -8,15 +8,15 @@
   <form action="/create" method="post">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
-      Username: <br/>
+      <label for="username">Username:</label><br/>
       <input type="text" name="username"/>
     </p>
     <p>
-      Password: <br/>
+      <label for="password1">Password:</label><br/>
       <input type="password" name="password1"/>
     </p>
     <p>
-      Password again: <br/>
+      <label for="password2">Password again:</label><br/>
       <input type="password" name="password2"/>
     </p>
     <input type="submit" value="Create account"/>

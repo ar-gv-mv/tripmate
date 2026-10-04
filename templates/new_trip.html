@@ -10,23 +10,23 @@
   <form action="/create_trip" method="post">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
-      From: <br/>
+      <label for="start_location">From:</label><br/>
       <input type="text" name="start_location" maxlength="50" required/>
     </p>
     <p>
-      To: <br/>
+      <label for="destination">To:</label><br/>
       <input type="text" name="destination" maxlength="50" required/>/>
     </p>
     <p>
-      Date: <br/>
+      <label for="travel_date">Date:</label><br/>
       <input type="date" name="travel_date" required/>
     </p>
     <p>
-      Number of seats: <br/>
+      <label for="seat_count">Number of seats:</label><br/>
       <input type="number" name="seat_count" min="1" max="8" required/>
     </p>
     <p>
-      Description: <br/>
+      <label for="description">Description:</label><br/>
       <textarea name="description" rows="5" cols="40" maxlength="1000"></textarea>
     </p>
     <h2>Travel style</h2>

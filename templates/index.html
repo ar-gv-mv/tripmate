@@ -25,11 +25,11 @@
   <form action="/login" method="post">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
-      Username: <br/>
+      <label for="username">Username:</label><br/>
       <input type="text" name="username"/>
     </p>
     <p>
-      Password: <br/>
+      <label for="password">Password:</label><br/>
       <input type="password" name="password"/>
     </p>
     <input type="submit" value="Log in"/>
