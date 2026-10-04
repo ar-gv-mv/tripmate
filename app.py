@@ -110,11 +110,10 @@ def login():
     else:
         return "ERROR: wrong username or password"
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
-    if "user_id" in session:
-        del session["user_id"]
-        del session["username"]
+    check_csrf()
+    session.clear()
     return redirect("/")
 
 @app.route("/new_trip")
@@ -178,6 +177,7 @@ def create_trip():
 
 @app.route("/trip/<int:trip_id>")
 def show_trip(trip_id):
+    set_csrf_token()
     trip = trips.get_trip(trip_id)
     selected = trips.get_trip_classifications(trip_id)
     style = "Not specified"
@@ -289,9 +289,11 @@ def remove_trip(trip_id):
         return "ERROR: access denied"
 
     if request.method == "GET":
+        set_csrf_token()
         return render_template("remove_trip.html", trip=trip)
 
     if request.method == "POST":
+        check_csrf()
         if "continue" in request.form:
             trips.remove_trip(trip["id"])
 
@@ -300,9 +302,11 @@ def remove_trip(trip_id):
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "GET":
+        set_csrf_token()
         return render_template("search.html")
 
     if request.method == "POST":
+        check_csrf()
         start_location = request.form["start_location"]
         destination = request.form["destination"]
         travel_date = request.form["travel_date"]

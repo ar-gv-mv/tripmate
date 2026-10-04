@@ -8,6 +8,7 @@
   <h1>Delete trip</h1>
 
   <form action="/remove_trip/{{trip.id}}" method="post">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
       Are you sure you want to delete this trip?
     </p>

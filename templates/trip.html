@@ -71,6 +71,7 @@
       <p>You have joined this trip.</p>
       {%elif seats_left > 0%}
       <form action="/join_trip/{{trip.id}}" method="post">
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
         <input type="submit" value="Join trip"/>
       </form>
       {%else%}

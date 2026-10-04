@@ -8,6 +8,7 @@
   <h1>Search trips</h1>
 
   <form action="/search" method="post">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
     <p>
       Starting location: <br/>
       <input type="text" name="start_location"/>

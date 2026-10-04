@@ -17,9 +17,10 @@
   <p>
     <a href="/new_trip">Create a new trip</a>
   </p>
-  <p>
-    <a href="/logout">Log out</a>
-  </p>
+  <form action="/logout" method="post">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
+    <input type="submit" value="Log out"/>
+  </form>
   {%else%}
   <form action="/login" method="post">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}"/>
