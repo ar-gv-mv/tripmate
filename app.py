@@ -7,6 +7,7 @@ import db
 import trips
 import users
 import secrets
+from datetime import date
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -66,17 +67,17 @@ def register():
 @app.route("/create", methods=["POST"])
 def create():
     check_csrf()
-    username = request.form["username"]
+    username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
-    if not username or len(username) >50:
-        return "ERROR: invalid username"
+    if not username or len(username) > 50:
+        return "ERROR: invalid username", 400
     if not password1:
-        return "ERROR: password cannot be empty"
+        return "ERROR: password cannot be empty", 400
 
     if password1 != password2:
-        return "ERROR: passwords are not the same"
+        return "ERROR: passwords are not the same", 400
 
     password_hash = generate_password_hash(password1)
 
@@ -133,28 +134,31 @@ def create_trip():
 
     check_csrf()
 
-    start_location = request.form["start_location"]
-    destination = request.form["destination"]
+    start_location = request.form["start_location"].strip()
+    destination = request.form["destination"].strip()
     travel_date = request.form["travel_date"]
     seat_count = request.form["seat_count"]
     description = request.form["description"]
     user_id = session["user_id"]
 
-    if not start_location or len(start_location) > 100:
+    if not start_location or len(start_location) > 50:
         return "ERROR: invalid starting location"
 
-    if not destination or len(destination) > 100:
+    if not destination or len(destination) > 50:
         return "ERROR: invalid destination"
 
-    if not travel_date:
-        return "ERROR: invalid date"
+    try:
+        if date.fromisoformat(travel_date).isoformat() != travel_date:
+            return "ERROR: invalid date", 400
+    except ValueError:
+        return "ERROR: invalid date", 400
 
     if not seat_count.isdigit():
-        return "ERROR: invalid number of seats"
+        return "ERROR: invalid number of seats", 400
 
     seat_count = int(seat_count)
 
-    if seat_count < 1 or seat_count > 100:
+    if seat_count < 1 or seat_count > 8:
         return "ERROR: invalid number of seats"
 
     if len(description) > 1000:
@@ -239,27 +243,30 @@ def edit_trip(trip_id):
 
     if request.method == "POST":
         check_csrf()
-        start_location = request.form["start_location"]
-        destination = request.form["destination"]
+        start_location = request.form["start_location"].strip()
+        destination = request.form["destination"].strip()
         travel_date = request.form["travel_date"]
         seat_count = request.form["seat_count"]
         description = request.form["description"]
 
-        if not start_location or len(start_location) > 100:
+        if not start_location or len(start_location) > 50:
             return "ERROR: invalid starting location"
 
-        if not destination or len(destination) > 100:
+        if not destination or len(destination) > 50:
             return "ERROR: invalid destination"
 
-        if not travel_date:
-            return "ERROR: invalid date"
+        try:
+            if date.fromisoformat(travel_date).isoformat() != travel_date:
+                return "ERROR: invalid date", 400
+        except ValueError:
+            return "ERROR: invalid date", 400
 
         if not seat_count.isdigit():
-            return "ERROR: invalid number of seats"
+            return "ERROR: invalid number of seats", 400
 
         seat_count = int(seat_count)
 
-        if seat_count < 1 or seat_count > 100:
+        if seat_count < 1 or seat_count > 8:
             return "ERROR: invalid number of seats"
 
         participants = trips.get_participants(trip_id)
